@@ -1,60 +1,31 @@
 # PolyglotMesh
 
-PolyglotMesh is a developer-focused sandbox concept for exploring a multi-language runtime. This repository currently provides the application foundation and a live backend health check. Language execution, GraalVM integration, Monaco Editor, and Docker support are not implemented yet.
+PolyglotMesh is an enterprise-oriented sandbox foundation for exploring a multi-language runtime. The backend embeds GraalVM Polyglot and reports its runtime and guest-language capabilities. Guest-code execution, Monaco Editor, and Docker support are not implemented.
 
 ## Architecture
 
-- `backend/` is a Java 21 Spring Boot WebFlux service. It owns the `/api/health` endpoint and controls allowed browser origins through `FRONTEND_ORIGIN`.
-- `frontend/` is a React and TypeScript dashboard. Its API client owns backend URL configuration, timeout handling, and health response validation. UI components render the resulting connection state.
+- `backend/` is a Java 21 Spring Boot WebFlux service with `/api/health` and `/api/runtime/capabilities`.
+- `frontend/` is a React and TypeScript dashboard. Its API client validates live health and runtime capability responses.
 - `docs/` contains the architecture and API contract.
-
-See [docs/architecture.md](docs/architecture.md) for details and current limitations.
 
 ## Requirements
 
-- JDK 21
-- Maven 3.9+
+- JDK 21 and Maven 3.9+
 - Node.js 20.19+ and npm
+- GraalVM installation is not required for the embedded JavaScript Community engine; Maven resolves its runtime artifacts.
 
 ## Local development
 
-Backend, from `backend/`:
+From `backend/`, run `mvn spring-boot:run`. The service listens on port 8080. Set `SERVER_PORT` to change it and `FRONTEND_ORIGIN` to change the allowed browser origin (default `http://localhost:5173`).
 
-```sh
-mvn spring-boot:run
-```
-
-The backend listens on port 8080 by default. Set `SERVER_PORT` to change it. Set `FRONTEND_ORIGIN` if the browser app is served from a different origin (default `http://localhost:5173`).
-
-Frontend, from `frontend/`:
-
-```sh
-npm ci
-npm run dev
-```
-
-Copy `frontend/.env.example` to `frontend/.env.local` and set `VITE_API_BASE_URL` if the backend is not at `http://localhost:8080`. The frontend dev server runs on port 5173 by default.
+From `frontend/`, run `npm ci` and `npm run dev`. Copy `.env.example` to `.env.local` and set `VITE_API_BASE_URL` if the backend is not at `http://localhost:8080`.
 
 ## API
 
-`GET /api/health` returns JSON with `service`, `status`, and an ISO-8601 UTC `timestamp`. See [docs/api.md](docs/api.md).
+`GET /api/health` checks HTTP application reachability. `GET /api/runtime/capabilities` reports runtime initialization and detected guest languages. See [docs/api.md](docs/api.md).
 
 ## Checks
 
-Backend tests and package:
+In `backend/`, run `mvn test` and `mvn package`. In `frontend/`, run `npm test` and `npm run build`.
 
-```sh
-cd backend
-mvn test
-mvn package
-```
-
-Frontend tests and production build:
-
-```sh
-cd frontend
-npm test
-npm run build
-```
-
-The backend has no database dependency. There is no language execution API yet; the language cards are informational and do not claim to execute code.
+Runtime capability detection does not execute user code. Python and Ruby are reported as unavailable unless their implementations are installed and initialized.

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
-import { ApiError, fetchHealth } from './api/health';
+import { ApiError, fetchHealth, fetchRuntimeCapabilities, type RuntimeCapabilities } from './api/health';
+import { RuntimeCapabilitiesPanel, type CapabilityViewState } from './RuntimeCapabilitiesPanel';
 
 type Connection = 'checking' | 'connected' | 'unavailable' | 'unexpected';
 
@@ -7,6 +8,9 @@ export default function App() {
   const [connection, setConnection] = useState<Connection>('checking');
   const [checkedAt, setCheckedAt] = useState<string>();
   const [detail, setDetail] = useState('');
+  const [runtimeState, setRuntimeState] = useState<CapabilityViewState>('checking');
+  const [capabilities, setCapabilities] = useState<RuntimeCapabilities>();
+  const [runtimeError, setRuntimeError] = useState('');
 
   const checkConnection = useCallback(async () => {
     setConnection('checking');
@@ -28,6 +32,16 @@ export default function App() {
   }, []);
 
   useEffect(() => { void checkConnection(); }, [checkConnection]);
+
+  useEffect(() => {
+    void fetchRuntimeCapabilities().then((result) => {
+      setCapabilities(result);
+      setRuntimeState(result.status === 'INITIALIZED' ? 'ready' : 'unavailable');
+    }).catch((error: unknown) => {
+      setRuntimeState('failed');
+      setRuntimeError(error instanceof ApiError ? error.message : 'An unexpected error occurred while checking runtime capabilities.');
+    });
+  }, []);
 
   const state = {
     checking: { label: 'Checking connection', symbol: '···', description: 'Contacting the PolyglotMesh API' },
@@ -55,12 +69,8 @@ export default function App() {
       </section>
       <section className="workspace" aria-label="Runtime overview">
         <div className="workspace-heading"><div><span className="eyebrow">01 / GETTING STARTED</span><h2>Your runtime workspace</h2></div><span className="workspace-index">PM — 001</span></div>
-        <div className="language-grid">
-          <article className="language-card"><span className="language-number">01</span><span className="language-icon js">JS</span><h3>JavaScript</h3><p>Fast iteration in a familiar runtime.</p><span className="availability"><i /> READY TO CONNECT</span></article>
-          <article className="language-card"><span className="language-number">02</span><span className="language-icon py">Py</span><h3>Python</h3><p>Bring expressive scripting to the mix.</p><span className="availability"><i /> READY TO CONNECT</span></article>
-          <article className="language-card"><span className="language-number">03</span><span className="language-icon java">J</span><h3>Java</h3><p>Build on the strength of the JVM.</p><span className="availability"><i /> READY TO CONNECT</span></article>
-        </div>
-        <p className="roadmap-note"><span>↗</span> Language execution is on the roadmap. The backend status above reflects the live health API.</p>
+        <RuntimeCapabilitiesPanel state={runtimeState} capabilities={capabilities} error={runtimeError} />
+        <p className="roadmap-note">Guest code execution is not enabled. These statuses report runtime capability detection only.</p>
       </section>
       <footer><span>POLYGLOTMESH <i /> GRAALVM RUNTIME SANDBOX</span><span>BUILT FOR EXPLORATION <b>✳</b></span></footer>
     </main>
