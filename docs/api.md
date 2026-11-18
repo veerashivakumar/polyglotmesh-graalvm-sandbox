@@ -33,4 +33,29 @@ Returns HTTP `200` with the most recently initialized runtime capability snapsho
 }
 ```
 
-The runtime name and version, Java version, and language statuses come from the running engine and JVM. If runtime initialization fails, the endpoint remains available and returns `status: UNAVAILABLE` with a generic diagnostic; detailed exceptions are logged server-side. This API does not execute guest code.
+The runtime name and version, Java version, and language statuses come from the running engine and JVM. If runtime initialization fails, the endpoint remains available and returns `status: UNAVAILABLE` with a generic diagnostic; detailed exceptions are logged server-side.
+
+## `POST /api/executions`
+
+Executes JavaScript in a new restricted GraalVM context. The only accepted language identifiers are `javascript` and `js`; both select the runtime-verified `js` capability. Other languages, blank source, and malformed input receive HTTP `400`. Source longer than 20,000 characters receives HTTP `413`. Request bodies are bounded by the WebFlux codec at 64 KiB.
+
+Request:
+
+```json
+{ "language": "javascript", "code": "const price = 100; console.log(price * 2);" }
+```
+
+Successful guest evaluation returns HTTP `200`:
+
+```json
+{
+  "executionId": "generated-uuid",
+  "language": "javascript",
+  "status": "SUCCESS",
+  "output": "200",
+  "error": null,
+  "executionTimeMs": 18
+}
+```
+
+Guest syntax and runtime errors return HTTP `200` with `status: ERROR`, captured output, and a short guest error message. Infrastructure and request errors use HTTP error statuses. The elapsed time includes context construction, guest execution, and cleanup; it is not a measure of guest computation alone.

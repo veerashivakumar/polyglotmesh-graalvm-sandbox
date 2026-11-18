@@ -1,16 +1,16 @@
 # PolyglotMesh
 
-PolyglotMesh is an enterprise-oriented sandbox foundation for exploring a multi-language runtime. The backend embeds GraalVM Polyglot and reports its runtime and guest-language capabilities. Guest-code execution, Monaco Editor, and Docker support are not implemented.
+PolyglotMesh is an enterprise-oriented sandbox foundation for exploring a multi-language runtime. The backend embeds GraalVM Polyglot, reports runtime capabilities, and provides controlled JavaScript execution. Python and Ruby execution, Monaco Editor, and Docker support are not implemented.
 
 ## Architecture
 
-- `backend/` is a Java 21 Spring Boot WebFlux service with `/api/health` and `/api/runtime/capabilities`.
-- `frontend/` is a React and TypeScript dashboard. Its API client validates live health and runtime capability responses.
+- `backend/` is a Java 25 Spring Boot WebFlux service with health, runtime capability, and JavaScript execution APIs.
+- `frontend/` is a React and TypeScript dashboard with Studio Canvas and centralized API clients.
 - `docs/` contains the architecture and API contract.
 
 ## Requirements
 
-- JDK 21 and Maven 3.9+
+- JDK 25 and Maven 3.9+
 - Node.js 20.19+ and npm
 - GraalVM installation is not required for the embedded JavaScript Community engine; Maven resolves its runtime artifacts.
 
@@ -28,4 +28,4 @@ From `frontend/`, run `npm ci` and `npm run dev`. Copy `.env.example` to `.env.l
 
 In `backend/`, run `mvn test` and `mvn package`. In `frontend/`, run `npm test` and `npm run build`.
 
-Runtime capability detection does not execute user code. Python and Ruby are reported as unavailable unless their implementations are installed and initialized.
+Runtime capability detection remains separate from execution. Only JavaScript is currently executable; Python and Ruby are reported as unavailable until their implementations are installed and initialized.

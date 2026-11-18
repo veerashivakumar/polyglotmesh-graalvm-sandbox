@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { ApiError, fetchHealth, fetchRuntimeCapabilities, type RuntimeCapabilities } from './api/health';
 import { RuntimeCapabilitiesPanel, type CapabilityViewState } from './RuntimeCapabilitiesPanel';
+import { StudioCanvas } from './StudioCanvas';
 
 type Connection = 'checking' | 'connected' | 'unavailable' | 'unexpected';
 
@@ -70,8 +71,9 @@ export default function App() {
       <section className="workspace" aria-label="Runtime overview">
         <div className="workspace-heading"><div><span className="eyebrow">01 / GETTING STARTED</span><h2>Your runtime workspace</h2></div><span className="workspace-index">PM — 001</span></div>
         <RuntimeCapabilitiesPanel state={runtimeState} capabilities={capabilities} error={runtimeError} />
-        <p className="roadmap-note">Guest code execution is not enabled. These statuses report runtime capability detection only.</p>
+        <p className="roadmap-note">Runtime statuses report capability detection. JavaScript is available in Studio Canvas below.</p>
       </section>
+      <StudioCanvas />
       <footer><span>POLYGLOTMESH <i /> GRAALVM RUNTIME SANDBOX</span><span>BUILT FOR EXPLORATION <b>✳</b></span></footer>
     </main>
   );
