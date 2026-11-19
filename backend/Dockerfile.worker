@@ -1,0 +1,6 @@
+FROM eclipse-temurin:25-jre
+WORKDIR /app
+COPY backend/target/classes /app/classes
+COPY backend/target/dependency /app/dependency
+USER 65534:65534
+ENTRYPOINT ["java", "-Dpolyglot.engine.userResourceCache=/graal-cache", "-cp", "/app/classes:/app/dependency/*", "com.infotactsolutions.polyglotmesh.execution.WorkerMain"]

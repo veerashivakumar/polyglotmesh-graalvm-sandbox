@@ -9,7 +9,7 @@ export interface ExecutionResponse {
 }
 
 const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8080').replace(/\/$/, '');
-const REQUEST_TIMEOUT_MS = 10_000;
+const REQUEST_TIMEOUT_MS = 25_000;
 
 export class ExecutionApiError extends Error {
   constructor(message: string, public readonly status?: number) { super(message); this.name = 'ExecutionApiError'; }

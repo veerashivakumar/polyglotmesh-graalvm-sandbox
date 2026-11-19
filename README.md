@@ -1,6 +1,6 @@
 # PolyglotMesh
 
-PolyglotMesh is an enterprise-oriented sandbox foundation for exploring a multi-language runtime. The backend embeds GraalVM Polyglot, reports runtime capabilities, and provides controlled JavaScript execution. Python and Ruby execution, Monaco Editor, and Docker support are not implemented.
+PolyglotMesh is a sandbox foundation for exploring a multi-language runtime. The backend embeds GraalVM Polyglot, reports runtime capabilities, and defaults to one-shot Docker worker execution for JavaScript. Python and Ruby execution and Monaco Editor are not implemented.
 
 ## Architecture
 
@@ -29,3 +29,5 @@ From `frontend/`, run `npm ci` and `npm run dev`. Copy `.env.example` to `.env.l
 In `backend/`, run `mvn test` and `mvn package`. In `frontend/`, run `npm test` and `npm run build`.
 
 Runtime capability detection remains separate from execution. Only JavaScript is currently executable; Python and Ruby are reported as unavailable until their implementations are installed and initialized.
+
+Docker execution requires a running Docker daemon and the `polyglotmesh-js-worker:day5` image. See [docs/architecture.md](docs/architecture.md) for the worker build command, restrictions, and verification limits. Set `EXECUTION_PROVIDER=in-process` only for explicit local development; this mode has no OS process isolation.

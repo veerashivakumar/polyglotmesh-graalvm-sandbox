@@ -37,7 +37,7 @@ The runtime name and version, Java version, and language statuses come from the 
 
 ## `POST /api/executions`
 
-Executes JavaScript in a new restricted GraalVM context. The only accepted language identifiers are `javascript` and `js`; both select the runtime-verified `js` capability. Other languages, blank source, and malformed input receive HTTP `400`. Source longer than 20,000 characters receives HTTP `413`. Request bodies are bounded by the WebFlux codec at 64 KiB.
+Executes JavaScript in a one-shot Docker worker by default. The only accepted language identifiers are `javascript` and `js`. Other languages and blank source receive HTTP `400`. Source longer than 20,000 characters receives HTTP `413`. Request bodies are bounded by the WebFlux codec at 64 KiB. Docker/worker unavailability returns HTTP `503`; worker startup failures return `502`; a worker exceeding the 20-second wall-clock deadline returns `504`. The backend never switches to in-process execution after these failures. Set `EXECUTION_PROVIDER=in-process` explicitly to use the development-only embedded provider.
 
 Request:
 
@@ -59,3 +59,5 @@ Successful guest evaluation returns HTTP `200`:
 ```
 
 Guest syntax and runtime errors return HTTP `200` with `status: ERROR`, captured output, and a short guest error message. Infrastructure and request errors use HTTP error statuses. The elapsed time includes context construction, guest execution, and cleanup; it is not a measure of guest computation alone.
+
+In Docker mode, the response is serialized through worker stdin/stdout and retains the Day 4 response fields. The worker image and configured Docker restrictions are described in `docs/architecture.md`; this repository's current environment could not verify a daemon or run the image.

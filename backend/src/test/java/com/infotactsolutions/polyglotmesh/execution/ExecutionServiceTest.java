@@ -8,13 +8,15 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.web.server.ResponseStatusException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 class ExecutionServiceTest {
     private PolyglotRuntimeService runtime;
     private ExecutionService service;
 
-    @BeforeEach void setUp() { runtime = new PolyglotRuntimeService(); service = new ExecutionService(runtime); }
-    @AfterEach void tearDown() { service.close(); runtime.close(); }
+    private InProcessExecutionProvider provider;
+    @BeforeEach void setUp() { runtime = new PolyglotRuntimeService(); provider = new InProcessExecutionProvider(); service = new ExecutionService(provider, runtime); }
+    @AfterEach void tearDown() { provider.close(); runtime.close(); }
 
     @Test void evaluatesJavaScriptAndCapturesConsoleOutputAndValue() {
         var result = service.execute("javascript", "const price = 100; console.log(price * 2); price + 1");
@@ -64,5 +66,13 @@ class ExecutionServiceTest {
         var response = service.execute("javascript", "while (true) { }");
         assertThat(response.status()).isEqualTo(ExecutionResponse.Status.ERROR);
         assertThat(response.error()).containsAnyOf("time limit", "statement limit");
+    }
+
+    @Test void dockerUnavailableFailsClosedWithoutInProcessFallback() {
+        var unavailable = new ContainerExecutionProvider(new ObjectMapper(), args -> { throw new ContainerExecutionProvider.UnavailableException(); });
+        var isolatedService = new ExecutionService(unavailable, runtime);
+        assertThatThrownBy(() -> isolatedService.execute("javascript", "1 + 1"))
+                .isInstanceOf(ResponseStatusException.class)
+                .hasMessageContaining("Isolated execution worker is unavailable");
     }
 }
