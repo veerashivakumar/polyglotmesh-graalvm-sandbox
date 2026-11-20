@@ -16,7 +16,23 @@ PolyglotMesh is a sandbox foundation for exploring a multi-language runtime. The
 
 ## Local development
 
-From `backend/`, run `mvn spring-boot:run`. The service listens on port 8080. Set `SERVER_PORT` to change it and `FRONTEND_ORIGIN` to change the allowed browser origin (default `http://localhost:5173`).
+In a PowerShell terminal at the repository root, dot-source `scripts/setup-polyglotmesh-env.ps1` before running Maven. This configures Java 25 and the project-specific Maven cache for the current terminal only, checks that the cache is writable, and confirms Maven uses it. For each new terminal, run:
+
+```powershell
+. .\scripts\setup-polyglotmesh-env.ps1
+java -version
+javac -version
+mvn.cmd -version
+```
+
+If PowerShell blocks the local script under the current execution policy, allow scripts for that process only and then dot-source it:
+
+```powershell
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+. .\scripts\setup-polyglotmesh-env.ps1
+```
+
+Then, from `backend/`, run `mvn.cmd spring-boot:run`. Maven uses `C:\Users\veera\.m2\repository-polyglotmesh`; the script does not permanently change Windows environment variables or Maven settings. The service listens on port 8080. Set `SERVER_PORT` to change it and `FRONTEND_ORIGIN` to change the allowed browser origin (default `http://localhost:5173`).
 
 From `frontend/`, run `npm ci` and `npm run dev`. Copy `.env.example` to `.env.local` and set `VITE_API_BASE_URL` if the backend is not at `http://localhost:8080`.
 
@@ -27,6 +43,8 @@ From `frontend/`, run `npm ci` and `npm run dev`. Copy `.env.example` to `.env.l
 ## Checks
 
 In `backend/`, run `mvn test` and `mvn package`. In `frontend/`, run `npm test` and `npm run build`.
+
+The current Java 25 and GraalVM 24.1.2 compatibility findings, including the provisional recommendation for future Python work, are recorded in [ADR-001](docs/decisions/ADR-001-graalvm-java25-compatibility.md). Dependencies remain unchanged pending a tested compatibility decision.
 
 Runtime capability detection remains separate from execution. Only JavaScript is currently executable; Python and Ruby are reported as unavailable until their implementations are installed and initialized.
 
