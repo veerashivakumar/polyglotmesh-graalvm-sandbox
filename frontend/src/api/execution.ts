@@ -12,12 +12,13 @@ const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:808
 const REQUEST_TIMEOUT_MS = 25_000;
 
 export class ExecutionApiError extends Error {
-  constructor(message: string, public readonly status?: number) { super(message); this.name = 'ExecutionApiError'; }
+  constructor(message: string, public readonly status?: number, public readonly kind?: 'timeout' | 'unavailable') { super(message); this.name = 'ExecutionApiError'; }
 }
 
 export async function executeCode(request: ExecutionRequest, fetcher: typeof fetch = fetch): Promise<ExecutionResponse> {
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+  let timedOut = false;
+  const timeout = setTimeout(() => { timedOut = true; controller.abort(); }, REQUEST_TIMEOUT_MS);
   let response: Response;
   try {
     response = await fetcher(`${API_BASE_URL}/api/executions`, {
@@ -26,7 +27,9 @@ export async function executeCode(request: ExecutionRequest, fetcher: typeof fet
     });
   } catch {
     clearTimeout(timeout);
-    throw new ExecutionApiError('The backend could not be reached.');
+    throw timedOut
+      ? new ExecutionApiError('Execution request exceeded the 25 second client wait limit.', undefined, 'timeout')
+      : new ExecutionApiError('The backend could not be reached.', undefined, 'unavailable');
   }
   clearTimeout(timeout);
   let data: unknown;

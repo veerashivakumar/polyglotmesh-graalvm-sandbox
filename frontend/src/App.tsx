@@ -55,7 +55,7 @@ export default function App() {
     <main className="shell">
       <header className="topbar">
         <a className="brand" href="#home" aria-label="PolyglotMesh home"><span className="brand-mark">P</span><span>polyglot<span className="brand-light">mesh</span></span></a>
-        <span className="edition">RUNTIME SANDBOX <i /> DAY 02</span>
+        <span className="edition">RUNTIME SANDBOX <i /> DAY 08</span>
       </header>
       <section className="hero" id="home">
         <div className="eyebrow"><span /> DEVELOPER ENVIRONMENT</div>
@@ -71,7 +71,7 @@ export default function App() {
       <section className="workspace" aria-label="Runtime overview">
         <div className="workspace-heading"><div><span className="eyebrow">01 / GETTING STARTED</span><h2>Your runtime workspace</h2></div><span className="workspace-index">PM — 001</span></div>
         <RuntimeCapabilitiesPanel state={runtimeState} capabilities={capabilities} error={runtimeError} />
-        <p className="roadmap-note">Runtime statuses report capability detection. JavaScript is available in Studio Canvas below.</p>
+        <p className="roadmap-note">Live runtime capability data comes from the backend. Production execution supports JavaScript; the GraalPy work is an isolated prototype, not an API capability.</p>
       </section>
       <StudioCanvas />
       <footer><span>POLYGLOTMESH <i /> GRAALVM RUNTIME SANDBOX</span><span>BUILT FOR EXPLORATION <b>✳</b></span></footer>
