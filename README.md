@@ -5,7 +5,7 @@ PolyglotMesh is a sandbox foundation for exploring a multi-language runtime. The
 ## Architecture
 
 - `backend/` is a Java 25 Spring Boot WebFlux service with health, runtime capability, and JavaScript execution APIs.
-- `frontend/` is a React and TypeScript dashboard with Studio Canvas and centralized API clients.
+- `frontend/` is a React and TypeScript dashboard with Studio Canvas, centralized API clients, and an execution results inspector with output/error details, metadata, copy, and clear actions.
 - `docs/` contains the architecture and API contract.
 
 ## Requirements

@@ -8,11 +8,21 @@ export interface ExecutionResponse {
   executionTimeMs: number;
 }
 
+export type ExecutionApiErrorKind =
+  | 'timeout'
+  | 'unavailable'
+  | 'unexpected-response'
+  | 'runtime-unavailable'
+  | 'worker-unavailable'
+  | 'worker-failure'
+  | 'backend-error'
+  | 'request-rejected';
+
 const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8080').replace(/\/$/, '');
 const REQUEST_TIMEOUT_MS = 25_000;
 
 export class ExecutionApiError extends Error {
-  constructor(message: string, public readonly status?: number, public readonly kind?: 'timeout' | 'unavailable') { super(message); this.name = 'ExecutionApiError'; }
+  constructor(message: string, public readonly status?: number, public readonly kind?: ExecutionApiErrorKind) { super(message); this.name = 'ExecutionApiError'; }
 }
 
 export async function executeCode(request: ExecutionRequest, fetcher: typeof fetch = fetch): Promise<ExecutionResponse> {
@@ -33,12 +43,26 @@ export async function executeCode(request: ExecutionRequest, fetcher: typeof fet
   }
   clearTimeout(timeout);
   let data: unknown;
-  try { data = await response.json(); } catch { throw new ExecutionApiError('The backend returned invalid JSON.', response.status); }
+  try { data = await response.json(); } catch { throw new ExecutionApiError('The backend returned an unexpected response.', response.status, 'unexpected-response'); }
   if (!response.ok) {
-    const message = isRecord(data) && typeof data.message === 'string' ? data.message : `The backend returned HTTP ${response.status}.`;
-    throw new ExecutionApiError(message, response.status);
+    const backendMessage = isRecord(data) && typeof data.message === 'string' ? data.message : '';
+    if (response.status === 504) throw new ExecutionApiError('JavaScript execution exceeded the worker time limit.', response.status, 'timeout');
+    if (response.status === 503 && backendMessage.toLowerCase().includes('runtime')) {
+      throw new ExecutionApiError('The JavaScript runtime is unavailable.', response.status, 'runtime-unavailable');
+    }
+    if (response.status === 503) {
+      throw new ExecutionApiError('The isolated execution worker is unavailable. Ensure Docker is running and the worker image is built.', response.status, 'worker-unavailable');
+    }
+    if (response.status === 502) {
+      throw new ExecutionApiError('The execution worker failed to start or exited unexpectedly.', response.status, 'worker-failure');
+    }
+    if (response.status >= 500) {
+      throw new ExecutionApiError('The backend could not complete the execution request.', response.status, 'backend-error');
+    }
+    const message = backendMessage || `The backend rejected the execution request (HTTP ${response.status}).`;
+    throw new ExecutionApiError(message, response.status, 'request-rejected');
   }
-  if (!isExecutionResponse(data)) throw new ExecutionApiError('The execution response did not match the API contract.', response.status);
+  if (!isExecutionResponse(data)) throw new ExecutionApiError('The execution response did not match the API contract.', response.status, 'unexpected-response');
   return data;
 }
 

@@ -55,7 +55,7 @@ export default function App() {
     <main className="shell">
       <header className="topbar">
         <a className="brand" href="#home" aria-label="PolyglotMesh home"><span className="brand-mark">P</span><span>polyglot<span className="brand-light">mesh</span></span></a>
-        <span className="edition">RUNTIME SANDBOX <i /> DAY 08</span>
+        <span className="edition">RUNTIME SANDBOX <i /> DAY 09</span>
       </header>
       <section className="hero" id="home">
         <div className="eyebrow"><span /> DEVELOPER ENVIRONMENT</div>
