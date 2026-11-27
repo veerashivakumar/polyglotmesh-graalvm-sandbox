@@ -14,7 +14,7 @@ The Day 5 worker image and real backend-to-worker path were verified on Docker D
 
 The Polyglot API is the Java API used to discover engines and create guest-language contexts. An `Engine` shares runtime infrastructure and language installations; a `Context` is the isolated environment in which a language is initialized or code can execute. Execution contexts are not shared between requests. Host access, host class lookup, filesystem and socket IO, environment access, native access, process creation, guest threads, and polyglot access are disabled. Context output and error streams are captured in a bounded buffer. This configuration reduces access to host resources but is not a production security boundary for hostile code; stronger guarantees require process or container isolation.
 
-The frontend is a React and TypeScript dashboard. Its centralized API clients own the backend URL, timeout handling, HTTP handling, and response contract checks. The dashboard renders HTTP connection state separately from runtime state and uses live language statuses. Studio Canvas submits JavaScript to the execution API and renders returned output, errors, and measured elapsed time. Python and Ruby remain unavailable.
+The frontend is a React and TypeScript five-window studio matching the supplied light reference: Runtime Hub, Polyglot IDE, Sandbox Isolation, Zero-Copy Audit, and Database Integration. Its centralized API clients own the backend URL, timeout handling, HTTP handling, and response contract checks. The Runtime Hub renders HTTP connection state separately from runtime state and uses live language statuses. The IDE submits JavaScript to the execution API and renders returned output, errors, and measured elapsed time. Python and Ruby remain unavailable. Audit and database windows explicitly report that no benchmark dataset or MongoDB integration exists; they do not present illustrative values as live results.
 
 ## GraalVM and languages
 
@@ -27,7 +27,7 @@ Only JavaScript is included in the build. Python and Ruby are candidates reporte
 | Variable | Application | Default | Purpose |
 | --- | --- | --- | --- |
 | `SERVER_PORT` | Backend | `8080` | HTTP listen port |
-| `FRONTEND_ORIGIN` | Backend | `http://localhost:5173` | Single allowed browser origin for `/api/**` |
+| `FRONTEND_ORIGIN` | Backend | `http://localhost:5173` | Single allowed browser origin for `/api/**` `GET`, `POST`, and preflight `OPTIONS`. Allowed request headers are `Accept` and `Content-Type`. |
 | `VITE_API_BASE_URL` | Frontend | `http://localhost:8080` | Backend origin used by the API client |
 
 The frontend reads Vite variables at build time. Never place secrets in `VITE_*` variables because they are included in browser assets.

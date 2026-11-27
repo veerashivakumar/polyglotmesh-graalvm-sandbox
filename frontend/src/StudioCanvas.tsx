@@ -23,10 +23,10 @@ const statusByApiErrorKind: Record<ExecutionApiErrorKind, StudioStatus> = {
   'request-rejected': 'execution-error',
 };
 
-export function StudioCanvas() {
+export function StudioCanvas({ initialCode }: { initialCode?: string }) {
   const [language, setLanguage] = useState('javascript');
-  const [selectedExample, setSelectedExample] = useState(examples[1].name);
-  const [code, setCode] = useState(examples[1].code);
+  const [selectedExample, setSelectedExample] = useState(initialCode ? 'Quick dispatch' : examples[1].name);
+  const [code, setCode] = useState(initialCode ?? examples[1].code);
   const [result, setResult] = useState<ExecutionResponse>();
   const [error, setError] = useState('');
   const [running, setRunning] = useState(false);
@@ -77,6 +77,7 @@ export function StudioCanvas() {
   return <section className="studio" aria-label="Studio Canvas">
     <div className="studio-heading"><div><span className="eyebrow">02 / STUDIO CANVAS</span><h2>Run a JavaScript snippet</h2></div>
       <div className="studio-selectors"><label className="language-select">EXAMPLE <select aria-label="Code example" value={selectedExample} onChange={(event) => loadExample(event.target.value)}>
+        {initialCode && <option value="Quick dispatch">Quick dispatch</option>}
         {examples.map((example) => <option key={example.name} value={example.name}>{example.name}</option>)}
       </select></label><label className="language-select">LANGUAGE <select value={language} onChange={(event) => { setLanguage(event.target.value); setError(''); setResult(undefined); setStatus('idle'); }}>
         <option value="javascript">JavaScript</option>

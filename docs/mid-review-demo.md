@@ -2,7 +2,7 @@
 
 ## Project overview
 
-PolyglotMesh is a Java-hosted polyglot runtime sandbox. The current product demonstrates submitted JavaScript executed by a GraalJS worker. The Spring Boot WebFlux service accepts an execution request and, by default, starts a one-shot Docker worker. The React and Vite frontend uses the service health, runtime capability, and execution APIs.
+PolyglotMesh is a Java-hosted polyglot runtime sandbox. The current product demonstrates submitted JavaScript executed by a GraalJS worker. The Spring Boot WebFlux service accepts an execution request and, by default, starts a one-shot Docker worker. The React and Vite frontend recreates the five-window studio reference and uses the service health, runtime capability, and execution APIs.
 
 ## Problem statement
 
@@ -37,6 +37,7 @@ The UI's runtime capability response describes the runtime detected inside the A
 - Docker is the default execution provider. Each request uses a new container with networking disabled, a read-only root, dropped capabilities, no-new-privileges, memory/CPU/PID limits, a non-root user, and bounded temporary filesystems. Guest contexts also restrict host access and apply a statement limit.
 - Studio examples are loaded into the editor without running. Session history contains actual requests and responses only and is cleared on refresh.
 - Python is not available through the production execution API.
+- Zero-Copy Audit has no measured benchmark data, and MongoDB persistence is not implemented. The corresponding windows display those limitations instead of generated sample results.
 
 ## Prerequisites
 

@@ -5,7 +5,7 @@ PolyglotMesh is a sandbox foundation for exploring a multi-language runtime. The
 ## Architecture
 
 - `backend/` is a Java 25 Spring Boot WebFlux service with health, runtime capability, and JavaScript execution APIs.
-- `frontend/` is a React and TypeScript dashboard with Studio Canvas, centralized API clients, and an execution results inspector with output/error details, metadata, copy, and clear actions.
+- `frontend/` is a React and TypeScript recreation of the five-window light studio reference: Runtime Hub, Polyglot IDE, Sandbox Isolation, Zero-Copy Audit, and MongoDB Integration. Its centralized API clients provide live health/runtime data and real JavaScript execution results.
 - `docs/` contains the architecture and API contract.
 
 ## Requirements
@@ -49,3 +49,5 @@ The current Java 25 and GraalVM 24.1.2 compatibility findings, including the pro
 Runtime capability detection remains separate from execution. Only JavaScript is currently executable; Python and Ruby are reported as unavailable until their implementations are installed and initialized.
 
 Docker execution requires a running Docker daemon and the `polyglotmesh-js-worker:day5` image. See [docs/architecture.md](docs/architecture.md) for the worker build command, restrictions, and verification limits. Set `EXECUTION_PROVIDER=in-process` only for explicit local development; this mode has no OS process isolation.
+
+The Runtime Hub displays live backend capabilities. The isolation window describes configured worker controls and distinguishes Docker execution from in-process contexts. Benchmark figures and MongoDB connectivity are not implemented; their windows report that status without showing synthetic results. The IDE executes JavaScript through the real API and keeps session-only history.

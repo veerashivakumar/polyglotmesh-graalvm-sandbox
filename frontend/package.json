@@ -10,10 +10,12 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@types/three": "^0.187.0",
     "@vitejs/plugin-react": "latest",
-    "vite": "latest",
     "react": "latest",
-    "react-dom": "latest"
+    "react-dom": "latest",
+    "three": "^0.187.0",
+    "vite": "latest"
   },
   "devDependencies": {
     "@types/react": "latest",
